@@ -6,7 +6,7 @@ class MenuItem(db.Model):
     __tablename__ = 'menuItems'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100), nullable=False, unique=True)
-    quantity = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Integer)
     price = db.Column(db.Integer, nullable=False)
 
     def json(self):
@@ -64,12 +64,12 @@ class MenuItem(db.Model):
 
     @validates('quantity') 
     def validatePrice(self, key, quantity):
-        if not quantity:
-            raise AssertionError('No Price provided for the Item')
+        # if not quantity:
+        #     raise AssertionError('No Quantity provided for the Item')
         try:
             val = int(quantity)
         except ValueError:
-            raise AssertionError('Price must be a positive number') 
+            raise AssertionError('Quantity must be a positive number') 
         if quantity < 0:
             raise AssertionError('Quantity must be a positive number') 
         return quantity
@@ -87,13 +87,19 @@ class Order(db.Model):
          'description': self.description, 'price': self.price}
 
     def addOrder(_description, _itemList):
-        new_item = Order(description=_description, itemList=_itemList)
+
+        # Calculate order price
+        orderPrice = 0
+        for i in range(len(_itemList)):
+            oldItem = MenuItem.query.filter_by(id=_itemList[i]['id']).first()
+            orderPrice = orderPrice +  _itemList[i]['quantity']*oldItem.price
+
+        new_item = Order(description=_description, itemList=_itemList, price=orderPrice)
         if _itemList:
             # Update item's available quantities and order price
             for i in range(len(_itemList)):
                 oldItem = MenuItem.query.filter_by(id=_itemList[i]['id']).first()
                 newQuantity = oldItem.quantity - _itemList[i]['quantity']
-
                 MenuItem.updateMenuItem(oldItem.id, oldItem.description , newQuantity, oldItem.price)
 
         db.session.add(new_item)
@@ -122,7 +128,7 @@ class Order(db.Model):
             try:
                 menuitem = MenuItem.query.filter_by(id=itemList[i]['id']).first()
             except NameError:
-                raise AssertionError('Item with Id '+id+'does not exist in order to fullfill the order')
+                raise AssertionError('Item with Id ' + id + 'does not exist in order to fullfill the order')
             if(menuitem.quantity < itemList[i]['quantity']):
                 raise AssertionError('There is not enough '+ menuitem.description +' available to complete this order')
         return itemList

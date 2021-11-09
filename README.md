@@ -23,12 +23,26 @@ An order has:
 * Payment amount
 * Order note
 
-### Lorem Ipsum
+### Installation
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat
-
-### Lorem Ipsum:
-
+Clone this repository
 ```
-Lorem ipsum dolor sit amet
+git clone https://github.com/Dtriantis/PointOfSale.git
 ```
+
+Create a virtual Enviroment
+```
+virtualenv -p python3 env
+source env/bin/activate 
+```
+
+Install the required packages
+```
+pip install requirements.txt
+```
+
+Run project
+```
+python pos/run.py
+```
+Navigate to http://localhost:5000/docs in order to launch Swagger UI
