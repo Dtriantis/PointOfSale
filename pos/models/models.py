@@ -2,12 +2,20 @@ from sqlalchemy import PickleType
 from sqlalchemy.orm import validates
 from . import db
 
+#######################
+### Menu Item Model ###
+#######################
+
 class MenuItem(db.Model):
     __tablename__ = 'menuItems'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100), nullable=False, unique=True)
     quantity = db.Column(db.Integer)
     price = db.Column(db.Integer, nullable=False)
+
+    #########################################
+    ### Methods for Model Bussiness logic ###
+    #########################################
 
     def json(self):
         return {'id': self.id, 'description': self.description,
@@ -25,10 +33,6 @@ class MenuItem(db.Model):
         return [MenuItem.json(MenuItem.query.filter_by(id=_id).first())]
 
     def updateMenuItem(_id, _description, _quantity, _price):
-        # Params cannot be null when updated from the Api 
-        # but can be null when updated from the service
-
-        # UNIQUE constraint on the _description -> Name of Item
 
         item_to_update = MenuItem.query.filter_by(id=_id).first()
         item_to_update.description = _description
@@ -37,8 +41,16 @@ class MenuItem(db.Model):
         db.session.commit()
 
     def deleteMenuItem(_id):
-        MenuItem.query.filter_by(id=_id).delete()
-        db.session.commit()
+        item = MenuItem.query.filter_by(id=_id).first()
+        if item:
+                MenuItem.query.filter_by(id=_id).delete()
+                db.session.commit()
+        else:
+            raise AssertionError('Item not found') 
+
+    ###############################
+    ### Menu Item DB Validation ###
+    ###############################
 
     @validates('price')
     def validatePrice(self, key, price):
@@ -64,8 +76,6 @@ class MenuItem(db.Model):
 
     @validates('quantity') 
     def validatePrice(self, key, quantity):
-        # if not quantity:
-        #     raise AssertionError('No Quantity provided for the Item')
         try:
             val = int(quantity)
         except ValueError:
@@ -74,6 +84,9 @@ class MenuItem(db.Model):
             raise AssertionError('Quantity must be a positive number') 
         return quantity
 
+###################
+### Order Model ###
+###################
 
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -81,6 +94,10 @@ class Order(db.Model):
     description = db.Column(db.String(300), nullable=False)
     itemList = db.Column(PickleType)
     price = db.Column(db.Integer, nullable=False)
+
+    #########################################
+    ### Methods for Model Bussiness logic ###
+    #########################################
 
     def json(self):
         return {'id': self.id, 'itemList': self.itemList,
@@ -93,7 +110,8 @@ class Order(db.Model):
         for i in range(len(_itemList)):
             oldItem = MenuItem.query.filter_by(id=_itemList[i]['id']).first()
             orderPrice = orderPrice +  _itemList[i]['quantity']*oldItem.price
-
+        
+        # Create order
         new_item = Order(description=_description, itemList=_itemList, price=orderPrice)
         if _itemList:
             # Update item's available quantities and order price
@@ -104,13 +122,22 @@ class Order(db.Model):
 
         db.session.add(new_item)
         db.session.commit()
+        return new_item.id
 
     def getAllOrders():
         return [Order.json(item) for item in Order.query.all()]
 
     def deleteOrder(_id):
-        Order.query.filter_by(id=_id).delete()
-        db.session.commit()
+        item = Order.query.filter_by(id=_id).first()
+        if item:
+                Order.query.filter_by(id=_id).delete()
+                db.session.commit()
+        else:
+            raise AssertionError('Order not found') 
+
+    ###########################
+    ### Order DB Validation ###
+    ###########################
 
     @validates('description') 
     def validatePrice(self, key, description):

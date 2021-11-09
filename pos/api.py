@@ -4,11 +4,7 @@ from flask import jsonify, request, Response, Blueprint, render_template
  
 order = Blueprint('order', __name__)
 
-# Home
-@order.route('/', methods=['GET'])
-def gethome():
-    return Response("You are HOME", status=200, mimetype='application/json')
-
+@order.route('/')
 @order.route('/docs')
 def get_docs():
     print('opening docs')
@@ -17,7 +13,10 @@ def get_docs():
 # Endpoint to get all items of the menu
 @order.route('/menuItems', methods=['GET'])
 def getMenuItems():
-    menu = MenuItem.getAllItems()
+    try:
+        menu = MenuItem.getAllItems()
+    except Exception as e:
+        return Response('{}'.format(str(e)) + " Working on to solving it", status=500, mimetype='application/json')
     if not menu:
         return Response("No items found on the Menu", status=400, mimetype='application/json')
     else:
@@ -26,7 +25,10 @@ def getMenuItems():
 # Endpoint to get menu item by id
 @order.route('/menuItems/<int:id>', methods=['GET'])
 def getMenuItem(id):
-    item = MenuItem.getMenuItem(id)
+    try:
+        item = MenuItem.getMenuItem(id)
+    except Exception as e:
+        return Response('{}'.format(str(e)) + " Working on to solving it", status=500, mimetype='application/json')
     if not item:
         return Response("Menu Item with id: "+id+" was not found", status=400, mimetype='application/json')
     else:
@@ -40,15 +42,13 @@ def addMenuItem():
     if request_data is not None:
         try:
             MenuItem.addMenuItem(request_data["description"], request_data["quantity"],request_data["price"])
-            response = Response("Menu Item added", 201, mimetype='application/json')
-            return response
+            return Response("Menu Item added", 201, mimetype='application/json')
         except AssertionError as e:
             return Response('{}'.format(str(e)), status=400, mimetype='application/json')
         except Exception as e:
-            return Response("Internal Issue", status=500, mimetype='application/json')
+            return Response('{}'.format(str(e)) + " Working on to solving it", status=500, mimetype='application/json')
     else:
-        response = Response("Failed to add Menu Item / Couldnt receive data", status=418, mimetype='application/json')
-        return response
+        return  Response("Failed to add Menu Item - Couldnt receive data", status=418, mimetype='application/json')
 
 # Endpoint to update a menu item
 @order.route('/menuItems/<int:id>', methods=['PUT'])
@@ -58,29 +58,43 @@ def updateMenuItem(id):
         MenuItem.updateMenuItem(id, request_data['description'], request_data['quantity'],request_data['price'])
     except AssertionError as e:
         return Response('{}'.format(str(e)), status=400, mimetype='application/json')
-    response = Response("Menu Item Updated", status=200, mimetype='application/json')
-    return response
+    except Exception as e:
+        return Response('{}'.format(str(e)) + " Working on to solving it", status=500, mimetype='application/json')
+    return Response("Menu Item Updated", status=200, mimetype='application/json')
 
 # Endpoint to delete menu item
 @order.route('/menuItems/<int:id>', methods=['DELETE'])
 def removeMenuItem(id):
-    MenuItem.deleteMenuItem(id)
-    response = Response("Menu Item Deleted", status=200, mimetype='application/json')
-    return response
+    try:
+        MenuItem.deleteMenuItem(id)
+        return Response("Menu Item Deleted", status=200, mimetype='application/json')
+    except AssertionError as e:
+        return Response('{}'.format(str(e)), status=400, mimetype='application/json')
+    except Exception as e:
+        return Response('{}'.format(str(e)) + " Working on to solving it", status=500, mimetype='application/json')
 
 # Endpoint to add New Order
 @order.route('/addOrder', methods=['POST'])
 def addNewOrder():
     request_data = request.get_json()
     if request_data is not None:
-        Order.addOrder(request_data["description"], request_data["itemList"])
-        response = Response("Order added", 201, mimetype='application/json')
-        return response
+        try:
+            newId = Order.addOrder(request_data["description"], request_data["itemList"])
+            return Response("Order added with id: " + str(newId), 201, mimetype='application/json')
+        except AssertionError as e:
+            return Response('{}'.format(str(e)), status=400, mimetype='application/json')
+        except Exception as e:
+            return Response('{}'.format(str(e)) + " Working on to solving it", status=500, mimetype='application/json')
     else:
-        response = Response("Failed to add Order / couldnt receive data", status=418, mimetype='application/json')
+        response = Response("Failed to add Order / couldnt receive data", status=400, mimetype='application/json')
         return response
 
 # Endpoint to get all Orders
 @order.route('/getOrders', methods=['GET'])
 def getOrders():
-    return jsonify({'Orders': Order.getAllOrders()})
+    try:
+        return jsonify({'Orders': Order.getAllOrders()})
+    except Exception as e:
+        return Response('{}'.format(str(e)) + " Working on to solving it", status=500, mimetype='application/json')
+
+

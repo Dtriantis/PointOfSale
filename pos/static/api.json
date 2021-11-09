@@ -1,199 +1,227 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Point Of Sale Api documentation",
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "/"
-    }
-  ],
-  "paths": {
-    "/menuItems/{itemId}": {
-      "get": {
-        "tags": [
-          "default"
-        ],
-        "summary": "retrieves menu item with the provided Id",
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "path",
-            "required": true,
-            "description": "Id of the Item",
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Point Of Sale Api",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "/"
+      }
+    ],
+    "paths": {
+      "/menuItems/{itemId}": {
+        "get": {
+          "tags": [
+            "default"
+          ],
+          "summary": "Returns menu item with the provided Id",
+          "parameters": [
+            {
+              "name": "itemId",
+              "in": "path",
+              "required": true,
+              "description": "Id of the Item",
+              "schema": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "400": {
+              "description": "Menu Item with id was not found"
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
+        },
+        "put": {
+          "tags": [
+            "default"
+          ],
+          "summary": "Updates menu item with the provided Id",
+          "parameters": [
+            {
+              "name": "itemId",
+              "in": "path",
+              "required": true,
+              "description": "Parameter description in CommonMark or HTML.",
+              "schema": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1
+              }
+            }
+          ],
+          "requestBody": {
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "description": "Pizza",
+                    "quantity": 6,
+                    "price": 10
+                  }
+                }
+              }
             }
           },
-          "400": {
-            "description": "Menu Item with id was not found"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "default"
-        ],
-        "summary": "updates menu item with the provided Id",
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "path",
-            "required": true,
-            "description": "Parameter description in CommonMark or HTML.",
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "example": {
-                  "description": "Pizza",
-                  "quantity": 6,
-                  "price": 10
-                }
-              }
+          "responses": {
+            "200": {
+              "description": "Menu Item Updated"
+            },
+            "400": {
+              "description": "BAD REQUEST"
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
+        "delete": {
+          "tags": [
+            "default"
+          ],
+          "summary": "Deletes menu item with the provided Id",
+          "parameters": [
+            {
+              "name": "itemId",
+              "in": "path",
+              "required": true,
+              "description": "Id of the Item",
+              "schema": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Menu Item Deleted"
+            },
+            "400": {
+              "description": "BAD REQUEST"
             }
           }
         }
       },
-      "delete": {
-        "tags": [
-          "default"
-        ],
-        "summary": "deletes menu item with the provided Id",
-        "parameters": [
-          {
-            "name": "itemId",
-            "in": "path",
-            "required": true,
-            "description": "Id of the Item",
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
-    },
-    "/menuItems": {
-      "post": {
-        "tags": [
-          "default"
-        ],
-        "summary": "/menuItems",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "example": {
-                  "description": "Pizza",
-                  "quantity": 6,
-                  "price": 10
-                }
+      "/menuItems": {
+        "get": {
+          "tags": [
+            "default"
+          ],
+          "summary": "Returns all Menu items",
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {}
               }
+            },
+            "400": {
+              "description": "Menu Item with id was not found"
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Successful response",
+        "post": {
+          "tags": [
+            "default"
+          ],
+          "summary": "Adds a New Item on the Menu",
+          "requestBody": {
             "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
-    },
-    "/getOrders": {
-      "get": {
-        "tags": [
-          "default"
-        ],
-        "summary": "/getOrders",
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
-          }
-        }
-      }
-    },
-    "/addOrder": {
-      "post": {
-        "tags": [
-          "default"
-        ],
-        "summary": "/addOrder",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "example": {
-                  "itemList": [
-                    {
-                      "id": 1,
-                      "quantity": 2
-                    },
-                    {
-                      "id": 2,
-                      "quantity": 3
-                    }
-                  ],
-                  "description": "my first order",
-                  "price": 10
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "description": "Pizza",
+                    "quantity": 6,
+                    "price": 10
+                  }
                 }
               }
             }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful response"
+            },
+            "400": {
+              "description": "BAD REQUEST"
+            },
+            "418": {
+              "description": "Failed to add Menu Item / Couldnt receive data"
+            }
           }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful response",
+        }
+      },
+      "/getOrders": {
+        "get": {
+          "tags": [
+            "default"
+          ],
+          "summary": "Returns all Orders",
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      },
+      "/addOrder": {
+        "post": {
+          "tags": [
+            "default"
+          ],
+          "summary": "Creates a new order",
+          "requestBody": {
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "itemList": [
+                      {
+                        "id": 1,
+                        "quantity": 2
+                      },
+                      {
+                        "id": 2,
+                        "quantity": 3
+                      }
+                    ],
+                    "description": "my first order"
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "OK",
+              "content": {
+                "integer": {
+                  "schema": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "BAD REQUEST"
             }
           }
         }
       }
     }
   }
-}
+  
