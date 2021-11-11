@@ -38,7 +38,7 @@ source env/bin/activate
 
 Install the required packages
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 Run project
@@ -46,3 +46,8 @@ Run project
 python pos/run.py
 ```
 Navigate to http://localhost:5000/docs in order to launch Swagger UI
+
+To run the Unit tests
+```
+python pos_test.py
+```
